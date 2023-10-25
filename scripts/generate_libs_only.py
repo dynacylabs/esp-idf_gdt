@@ -39,9 +39,6 @@ release_list = ['release_v2.0',
 os.chdir(esp_idf_elfs_path)
 
 for release_dir in release_list:
-    out_dir = os.path.join(base_dir, release_dir)
-    if not os.path.exists(out_dir):
-        os.mkdir(os.path.join(base_dir, release_dir))
     gdt_lib_file = os.path.join(gdt_libs_path, (gdt_library_prefix + release_dir + ".gdt"))
 
     os.chdir(os.path.join(esp_idf_elfs_path, release_dir))
@@ -49,17 +46,14 @@ for release_dir in release_list:
     for index, elf in enumerate(elf_glob):
         elf_path = os.path.normpath(os.path.join(esp_idf_elfs_path, release_dir, elf))
         ghidra_project_name = ghidra_project_basename + release_dir + "-" + elf
-        # subprocess.run(["touch", os.p])  # Will always create
-
+        
         if index == 0:
-            # subprocess.run(["touch", gdt_lib_file])
             # First elf for library, must create lib first
             command = [ghidra_headless_path,
                        ghidra_projects_path,
                        ghidra_project_name,
                        "-import", elf_path,
                        "-scriptPath", ghidra_gdt_path,
-                       "-postScript", "ExportGDT.py", out_dir, elf.replace('.elf', '.gdt'),
                        "-postScript", "ExportGDT.py", gdt_libs_path, gdt_lib_file]
         else:
             # Lib should exist
@@ -68,7 +62,6 @@ for release_dir in release_list:
                        ghidra_project_name,
                        "-import", elf_path,
                        "-scriptPath", ghidra_gdt_path,
-                       "-postScript", "ExportGDT.py", out_dir, elf.replace('.elf', '.gdt'),
                        "-postScript", "ExportGDTLibrary.py", gdt_libs_path, gdt_lib_file]
 
         subprocess.run(command)

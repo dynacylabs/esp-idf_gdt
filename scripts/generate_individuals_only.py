@@ -45,7 +45,6 @@ for release_dir in release_list:
         elf_path = os.path.normpath(os.path.join(esp_idf_elfs_path, release_dir, elf))
         out_file = os.path.join(out_dir, elf.replace('.elf', '.gdt'))
         ghidra_project_name = ghidra_project_basename + release_dir + "-" + elf
-        subprocess.run(['touch', out_file])
         command = [ghidra_headless_path,
                    ghidra_projects_path,
                    ghidra_project_name,
