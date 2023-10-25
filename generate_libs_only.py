@@ -46,16 +46,30 @@ for release_dir in release_list:
 
     os.chdir(os.path.join(esp_idf_elfs_path, release_dir))
     elf_glob = glob.glob('*.elf')
-    for elf in elf_glob:
+    for index, elf in enumerate(elf_glob):
         elf_path = os.path.normpath(os.path.join(esp_idf_elfs_path, release_dir, elf))
         out_file = os.path.join(out_dir, elf.replace('.elf', '.gdt'))
         ghidra_project_name = ghidra_project_basename + release_dir + "-" + elf
-        subprocess.run(['touch', out_file])
-        command = [ghidra_headless_path,
-                   ghidra_projects_path,
-                   ghidra_project_name,
-                   "-import", elf_path,
-                   "-scriptPath", ghidra_gdt_path,
-                   "-postScript", "ExportGDT.py", gdt_lib_file] 
+        subprocess.run(["touch", out_file])  # Will always create
+        
+        if index == 0:
+            # First elf for library, must create lib first
+            subprocess.run(["touch", gdt_lib_file])
+            command = [ghidra_headless_path,
+                       ghidra_projects_path,
+                       ghidra_project_name,
+                       "-import", elf_path,
+                       "-scriptPath", ghidra_gdt_path,
+                       "-postScript", "ExportGDT.py", out_file,
+                       "-postScript", "ExportGDT.py", gdt_lib_file]
+        else:
+            # Lib should exist
+            command = [ghidra_headless_path,
+                       ghidra_projects_path,
+                       ghidra_project_name,
+                       "-import", elf_path,
+                       "-scriptPath", ghidra_gdt_path,
+                       "-postScript", "ExportGDT.py", out_file,
+                       "-postScript", "ExportGDTLibrary.py", gdt_lib_file]
 
         subprocess.run(command)
