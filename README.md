@@ -1,5 +1,7 @@
 # esp-idf_gdt
 
+See https://github.com/dynacylabs/esp-idf_elfs for elf files
+
 ## how to use
 1. Clone this repo
     ```
