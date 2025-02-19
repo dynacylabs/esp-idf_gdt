@@ -1,3 +1,3 @@
 [submodule "ghidra-gdt"]
 	path = ghidra-gdt
-	url = git@github.com:austinc3030/ghidra-gdt.git
+	url = git@github.com:dynacylabs/ghidra-gdt.git
